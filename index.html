@@ -96,7 +96,7 @@
         const slider_output = document.getElementById("creal_slider-value");
         slider_output.innerText = crealOrderSlider.value;
         let initial_slider = crealOrderSlider.value;
-        // var creal = Number(initial_slider);
+        var creal = Number(initial_slider);
 
         console.log("initial_slider c-real :", initial_slider);
 
@@ -109,7 +109,7 @@
         const slider_outputci = document.getElementById("cimg_slider-value");
         slider_outputci.innerText = cimgOrderSlider.value;
         let cimginitial_slider = cimgOrderSlider.value;
-        // var cimag = Number(cimginitial_slider);
+        var cimag = Number(cimginitial_slider);
 
         console.log("initial_slider cimag : ", cimginitial_slider);
 
@@ -124,13 +124,13 @@
         var ty = height / 2;
 
         // Define the parameters for the Julia set
-        var creal = -0.8;
-        // var creal = -0.9;
+        // var creal = -0.8;
+        // var creal = 0.37;
         // var cimag = 0.184;
         // var cimag = 0.189;
-        var cimag = 0.156;
+        // var cimag = 0.1;
         // var maxIter = 250;
-        var maxIter = 150;
+        var maxIter = 100;
 
 
 
