@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Julia Set</title>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+</head>
+
+<body>
+    <svg id="canvas"></svg>
+    <div>    
+        <label for="creal_slider"> c-real Value:</label>
+        <input type="range" id="creal_slider" name="slider" type="number" min="-2" onClick="drawPlot()" max="2" step="0.05" value="-0.8">
+        <p>c-real value: <span id="creal_slider-value"></span></p>
+    </div>
+    
+    
+    <div>
+        <label for="cimg_slider"> c-img Slider Value:</label>
+        <input type="range" id="cimg_slider" name="slider-cimg"  type="number" onClick="drawPlot()" min="-1" max="1.5" step="0.01" value="0.184">
+        <p>c-img Value: <span id="cimg_slider-value"></span></p>
+    </div>
+
+    <script>
+
+
+        // Function to compute the Julia set for a given point
+        function julia(x, y, maxIter,  creal, cimag) {
+            var zreal = x;
+            var zimag = y;
+            for (var i = 0; i < maxIter; i++) {
+                var zreal_new = zreal * zreal - zimag * zimag + creal;
+                var zimag_new = 2 * zreal * zimag + cimag;
+                zreal = zreal_new;
+                zimag = zimag_new;
+                if (zreal * zreal + zimag * zimag > 4) {
+                    return i;
+                }
+            }
+            return maxIter;
+        }
+
+        
+
+     // Define the zoom event handler
+       /* function zoomed() {
+            // Get the current scale and translation
+            var currentScale = d3.event.transform.k;
+            var currentTx = d3.event.transform.x;
+            var currentTy = d3.event.transform.y;
+
+            // Update the scale and translation
+            scale = currentScale * 200;
+            tx = currentTx + width / 2;
+            ty = currentTy + height / 2;
+
+            // Recompute the Julia set with the new scale and translation
+            values = new Array(width * height);
+            for (var j = 0; j < height; j++) {
+            for (var i = 0; i < width; i++) {
+                var x = (i - tx) / scale;
+                var y = (j - ty) / scale;
+                var idx = j * width + i;
+                values[idx] = julia(x, y);
+            }
+        }
+
+        // Update the plot based on the new scale and translation
+        plot.data(values)
+            .attr("fill", function (d) { return colorScale(d); });
+    }*/
+
+    // Call the zoom function on the SVG element
+    // svg.call(d3.zoom().on("zoom", zoomed));
+    drawPlot();
+
+    function drawPlot(){
+
+        console.log("in drawPlot()");
+        // Set up the SVG element
+        var width = 500;
+        var height = 500;
+        // var creal ;
+        // var cimag ;
+        var svg = d3.select("#canvas")
+            .attr("width", width)
+            .attr("height", height);
+
+        // svg.call(d3.zoom().on("zoom", function () {
+        //     d3.select(this).attr("transform", d3.event.transform)
+        // }));
+
+        const crealOrderSlider = document.getElementById("creal_slider");
+        const slider_output = document.getElementById("creal_slider-value");
+        slider_output.innerText = crealOrderSlider.value;
+        let initial_slider = crealOrderSlider.value;
+        // var creal = Number(initial_slider);
+
+        console.log("initial_slider c-real :", initial_slider);
+
+        crealOrderSlider.oninput = function () {
+            slider_output.innerText = this.value;
+        };
+
+
+        const cimgOrderSlider = document.getElementById("cimg_slider");
+        const slider_outputci = document.getElementById("cimg_slider-value");
+        slider_outputci.innerText = cimgOrderSlider.value;
+        let cimginitial_slider = cimgOrderSlider.value;
+        // var cimag = Number(cimginitial_slider);
+
+        console.log("initial_slider cimag : ", cimginitial_slider);
+
+        cimgOrderSlider.oninput = function () {
+            slider_outputci.innerText = this.value;
+        };
+
+
+        // Set up the scale and translation
+        var scale = 200;
+        var tx = width / 2;
+        var ty = height / 2;
+
+        // Define the parameters for the Julia set
+        var creal = -0.8;
+        // var creal = -0.9;
+        // var cimag = 0.184;
+        // var cimag = 0.189;
+        var cimag = 0.156;
+        // var maxIter = 250;
+        var maxIter = 150;
+
+
+
+        // Create an array of values for the Julia set
+        var values = new Array(width * height);
+        for (var j = 0; j < height; j++) {
+            for (var i = 0; i < width; i++) {
+                var x = (i - tx) / scale;
+                var y = (j - ty) / scale;
+                var idx = j * width + i;
+                values[idx] = julia(x, y, maxIter, creal, cimag );
+            }
+        }
+
+        // Define the color scale for the Julia set
+        var colorScale = d3
+            // .scaleLinear()
+            // .domain([0, maxIter])
+            // .range(["#000000", "#FFFFFF"]);
+            .scaleSequential()
+            .domain([0, maxIter]) // Set the color domain to the range of the side lengths
+            .interpolator(d3.interpolateViridis);
+
+        d3.select("#julia").remove();
+
+         console.log("in drawPlot() removing prev.julia plot");
+        // Plot the Julia set
+        var plt_julia = svg
+            .append('g')
+            .attr("id", "julia");
+
+        var plot = plt_julia
+            .selectAll("rect")
+            .data(values)
+            .enter()
+            .append("rect")
+            .attr("x", function (d, i) { return i % width; })
+            .attr("y", function (d, i) { return Math.floor(i / width); })
+            .attr("width", 1)
+            .attr("height", 1)
+            .attr("fill", function (d) { return colorScale(d); });
+
+    }
+
+    </script>
+
+</body>
+
+</html>
